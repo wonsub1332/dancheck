@@ -27,7 +27,11 @@ class _homeScreenState extends State<homeScreen> {
     double width = screenSize.width;
     double height = screenSize.height;
 
-    return MaterialApp(
+    return WillPopScope(
+        onWillPop: ()  {
+      return Future(() => false); //뒤로가기 막음
+    },
+    child :MaterialApp(
       home: DefaultTabController(
         length: 3,
         child: Scaffold(
@@ -127,6 +131,7 @@ class _homeScreenState extends State<homeScreen> {
           ),
         ),
       ),
+    )
     );
   }
 
