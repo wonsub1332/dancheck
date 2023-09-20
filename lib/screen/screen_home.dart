@@ -1,6 +1,11 @@
 import 'package:dancheck/widget/attendentButton.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:timer_builder/timer_builder.dart';
+
+
+import '../widget/timColumWidget.dart';
 
 
 const Color activeColor = Color.fromARGB(255, 5, 63, 138);
@@ -32,7 +37,12 @@ class _homeScreenState extends State<homeScreen> {
           body: TabBarView(
             children: [
               Center(
-                child: Text("list"),
+                child: Column(
+                  children: [
+                    SizedBox(height: height *0.15,),
+                    timeColumWidget(),
+                  ],
+                ),
               ),
               Container(
                  child: Column(
@@ -64,6 +74,19 @@ class _homeScreenState extends State<homeScreen> {
                        height: height*0.025,
                      ),
                      attButton(state: false,),
+                     TimerBuilder.periodic(
+                       const Duration(seconds: 1),
+                       builder: (context) {
+                         return Text(
+                           formatDate(DateTime.now(), [hh, ':', nn, ':', ss, ' ', am]),
+                           style: const TextStyle(
+                             fontSize: 25,
+                             fontWeight: FontWeight.w600,
+                           ),
+                         );
+                       },
+                     ),
+
 
                    ],
                  )
