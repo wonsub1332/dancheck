@@ -50,6 +50,7 @@ class _homeScreenState extends State<homeScreen> {
               ),
               Container(
                  child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
                    children: [
                      SizedBox( //여백 용
                        height: height*0.2,
@@ -78,20 +79,38 @@ class _homeScreenState extends State<homeScreen> {
                        height: height*0.025,
                      ),
                      attButton(state: false,),
-                     TimerBuilder.periodic(
-                       const Duration(seconds: 1),
-                       builder: (context) {
-                         return Text(
-                           formatDate(DateTime.now(), [hh, ':', nn, ':', ss, ' ', am]),
-                           style: const TextStyle(
-                             fontSize: 25,
-                             fontWeight: FontWeight.w600,
-                           ),
-                         );
-                       },
+
+                     Container(
+                       padding: EdgeInsets.all(30),
+                       child:
+                         TimerBuilder.periodic(
+                         const Duration(seconds: 1),
+                         builder: (context) {
+                           return Text(
+                             formatDate(DateTime.now(), [hh, ':', nn, ':', ss, ' ', am]),
+                             style: const TextStyle(
+                               fontSize: 25,
+                               fontWeight: FontWeight.w600,
+                             ),
+                           );
+                         },
+                       ),
                      ),
 
-
+                     IconButton(
+                         onPressed: (){
+                           showDialog(
+                               context: context,
+                               builder: (BuildContext context){
+                                 return AlertDialog(
+                                   content: Text("dsds"),
+                                   insetPadding: EdgeInsets.fromLTRB(0, 80, 0, 80)
+                                 );
+                               }
+                           );
+                         },
+                         icon: Icon(Icons.help),
+                     )
                    ],
                  )
               ),
