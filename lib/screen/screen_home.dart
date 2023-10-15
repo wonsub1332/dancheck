@@ -1,8 +1,11 @@
+import 'package:dancheck/screen/screen_timeTable.dart';
 import 'package:dancheck/widget/attendentButton.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:timer_builder/timer_builder.dart';
+import '../screen/screen_table.dart';
+import '../screen/screen_bluetooth.dart';
 
 
 import '../widget/timColumWidget.dart';
@@ -26,6 +29,7 @@ class _homeScreenState extends State<homeScreen> {
     Size screenSize = MediaQuery.of(context).size;
     double width = screenSize.width;
     double height = screenSize.height;
+    bool classroomEQ = false;
 
     return WillPopScope(
         onWillPop: ()  {
@@ -40,44 +44,20 @@ class _homeScreenState extends State<homeScreen> {
           ),
           body: TabBarView(
             children: [
-              Center(
-                child: Column(
-                  children: [
-                    SizedBox(height: height *0.15,),
-                    timeColumWidget(),
-                  ],
-                ),
+
+              Container(
+                child: screen_table(),
               ),
               Container(
                  child: Column(
                    mainAxisAlignment: MainAxisAlignment.center,
                    children: [
-                     SizedBox( //여백 용
-                       height: height*0.2,
-                     ),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children:[
-                       Text(
-                       '강의실을 찾고 있습니다',
-                       style: TextStyle(
-                         fontWeight: FontWeight.bold,
-                         color: Colors.blueGrey
-                       ),
-                     ),
-                     SizedBox(
-                       width: width*0.05,
-                     ),
-                     SpinKitFadingCube(
-                       color: Colors.blue, // 색상 설정
-                       size: 25.0, // 크기 설정
-                       duration: Duration(seconds: 2), //속도 설정
-                     ),
-                     ],
-                     ),
-                     SizedBox( //여백 용
-                       height: height*0.025,
-                     ),
+                     SizedBox( height: height*0.2,),//여백용
+
+                     classroomText(width,classroomEQ),
+
+                     SizedBox( height: height*0.025,),//여백용
+
                      attButton(state: false,),
 
                      Container(
@@ -113,10 +93,10 @@ class _homeScreenState extends State<homeScreen> {
                      )
                    ],
                  )
-              ),
+              ), // 메인 홈 화면
 
               Center(
-                child: Text("mypage"),
+                child: screen_timeTable(),   // 마이페이지
               ),
 
             ],
@@ -124,7 +104,7 @@ class _homeScreenState extends State<homeScreen> {
           extendBodyBehindAppBar: true,
 
           bottomNavigationBar: Container(
-            height: 70,
+            height: height*0.15,
             padding: EdgeInsets.only(bottom: 10,top: 5),
             child: const TabBar(
               indicatorColor: Colors.blueAccent,
@@ -134,8 +114,8 @@ class _homeScreenState extends State<homeScreen> {
                 unselectedLabelColor: Colors.black38,
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.text_snippet),
-                    text: '수강목록',
+                    icon: Icon(Icons.schedule),
+                    text: '시간표',
                   ),
                   Tab(
                     icon: Icon(Icons.home),
@@ -152,6 +132,45 @@ class _homeScreenState extends State<homeScreen> {
       ),
     )
     );
+  }
+//widget
+  Widget classroomText(double width,bool classroomEQ){
+    if (classroomEQ == true) {
+      return SizedBox(
+          child: Text(
+            '제 2공학관 524호',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey
+            ),
+          )
+      );
+    }
+
+    else {
+      return SizedBox( // 강의실을 찾고 있습니다 !! 강의실 이름으로 변경 시켜야 한다.
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '강의실을 찾고 있습니다',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey
+              ),
+            ),
+            SizedBox(
+              width: width * 0.05,
+            ),
+            SpinKitFadingCube(
+              color: Colors.blue, // 색상 설정
+              size: 25.0, // 크기 설정
+              duration: Duration(seconds: 2), //속도 설정
+            ),
+          ],
+        ),
+      );
+    }
   }
 
 
