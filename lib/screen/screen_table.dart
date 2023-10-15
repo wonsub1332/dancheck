@@ -18,12 +18,17 @@ class screen_table extends StatefulWidget {
 
 class _screen_tableState extends State<screen_table> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Timetable> clsList=[];
-  tableProvider prov= tableProvider();
+  List<Timetable> clsList = [];
+  tableProvider prov = tableProvider();
+
+  List week = ['월', '화', '수', '목', '금'];
+  var kColumnLength = 22;
+  double kFirstColumnHeight = 20;
+  double kBoxSize = 60;
 
 
-  Future initUsers() async{
-    clsList= await prov.getTable();
+  Future initUsers() async {
+    clsList = await prov.getTable();
   }
 
   @override
@@ -36,68 +41,45 @@ class _screen_tableState extends State<screen_table> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
+    Size screenSize = MediaQuery
+        .of(context)
+        .size;
     double width = screenSize.width;
     double height = screenSize.height;
-    return SingleChildScrollView(
+    return Scaffold(
+      body: SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child:
-        Column(
+      child: Column(
           children: [
-            Column( //시간표
-              children: [
-              //SizedBox(height: height*0.18,),
-              //Text('시간표',style: TextStyle(fontSize: 18,color: Colors.deepOrangeAccent),),
-              SizedBox(
-                height: height*0.6,
-                child: ListView(
-                  children: [
-                    timeColumWidget(),
-                  ],
 
-                ),
-              ),
-              SizedBox(
-                width: width*0.9,
-                child: ButtonTheme(
-                  minWidth: width * 0.9,
-                  height: height * 0.024,
-                  child: ElevatedButton(
-                    onPressed: (){},
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: Colors.white,
-                      size: width * 0.08,
-                    ),
-                  ),
-                ),
-              ),
-              ],
-            ),
-              SizedBox(
-                height: 200,
-                child: tableList(),
-              ),
-          ],
-        ),
+                SizedBox(height: height*0.15,),
+                //Text('시간표',style: TextStyle(fontSize: 18,color: Colors.deepOrangeAccent),),
+                Container(
+                  height: 400,
+                    child: timeTableBuilder()),
+          SizedBox(
+            height: 200,
+            child: tableList(),
+          ),
+        ],
+      ),
+    )
     );
-
-
-
   }
-  Widget tableList(){
+
+  Widget tableList() {
     return FutureBuilder<List<Timetable>>(
       future: prov.getTable(),
       builder: (context, snapshot) {
-        final List<Timetable>? list=snapshot.data;
-        print("In FutureBuilder : "+list.toString());
+        final List<Timetable>? list = snapshot.data;
+        print("In FutureBuilder : " + list.toString());
 
-        if(snapshot.hasData){
+        if (snapshot.hasData) {
           return ListView.builder(
 
             itemCount: list?.length,
-            itemBuilder: (context,index){
-              final cls=list![index];
+            itemBuilder: (context, index) {
+              final cls = list![index];
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
@@ -108,8 +90,10 @@ class _screen_tableState extends State<screen_table> {
                         padding: EdgeInsets.all(0.8),
                         child: Column(
                           children: [
-                            Text(cls.subjno.toString(),style: TextStyle(fontSize: 15)),
-                            Text(cls.pronm.toString(),style: TextStyle(fontSize: 15)),
+                            Text(cls.subjno.toString(),
+                                style: TextStyle(fontSize: 15)),
+                            Text(cls.pronm.toString(),
+                                style: TextStyle(fontSize: 15)),
                             Text(cls.clsroom.toString(),
                                 style: TextStyle(fontSize: 15)),
                           ],
@@ -136,7 +120,7 @@ class _screen_tableState extends State<screen_table> {
             },
           );
         }
-        else if (snapshot.hasError){
+        else if (snapshot.hasError) {
           return Text("${snapshot.error}에러!!");
         }
         return CircularProgressIndicator();
@@ -144,4 +128,107 @@ class _screen_tableState extends State<screen_table> {
 
     );
   }
+
+  Widget timeTableBuilder() {
+    return Container(
+      height: kColumnLength / 2 * kBoxSize + kColumnLength,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(12),
+      ),
+
+      child: SingleChildScrollView(
+    child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+    SizedBox(
+    height: (kColumnLength / 2 * kBoxSize) + kFirstColumnHeight,
+    child: Row(
+    children: [
+    buildTimeColumn(),
+    ...buildDayColumn(0),
+    ...buildDayColumn(1),
+    ...buildDayColumn(2),
+    ...buildDayColumn(3),
+    ...buildDayColumn(4),
+    ],
+    ),
+    ),
+    ],
+    ),)
+
+    );
+  }
+  List<Widget> buildDayColumn(int index) {
+    return [
+      const VerticalDivider(
+        color: Colors.grey,
+        width: 0,
+      ),
+      Expanded(
+        flex: 4,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                SizedBox(
+                  height: 20,
+                  child: Text(
+                    '${week[index]}',
+                  ),
+                ),
+                ...List.generate(
+                  kColumnLength,
+                      (index) {
+                    if (index % 2 == 0) {
+                      return const Divider(
+                        color: Colors.grey,
+                        height: 0,
+                      );
+                    }
+                    return SizedBox(
+                      height: kBoxSize,
+                      child: Container(),
+                    );
+                  },
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    ];
+  }
+
+
+
+  Expanded buildTimeColumn() {
+    return Expanded(
+      child: Column(
+        children: [
+          SizedBox(
+            height: kFirstColumnHeight,
+          ),
+          ...List.generate(
+            kColumnLength,
+                (index) {
+              if (index % 2 == 0) {
+                return const Divider(
+                  color: Colors.grey,
+                  height: 0,
+                );
+              }
+              return SizedBox(
+                height: kBoxSize,
+                child: Center(child: Text('${index ~/ 2 + 9}')),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+  
+
+
 }
