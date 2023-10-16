@@ -35,7 +35,6 @@ dependencies:
   timer_builder:
   intl:
   date_format:
-  flutter_blue_plus:
   rive:
   permission_handler:
   http:

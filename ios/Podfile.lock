@@ -1,7 +1,5 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_blue_plus (0.0.1):
-    - Flutter
   - permission_handler_apple (9.1.1):
     - Flutter
   - rive_common (0.0.1):
@@ -9,15 +7,12 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - rive_common (from `.symlinks/plugins/rive_common/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_blue_plus:
-    :path: ".symlinks/plugins/flutter_blue_plus/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   rive_common:
@@ -25,7 +20,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_blue_plus: 4837da7d00cf5d441fdd6635b3a57f936778ea96
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   rive_common: 8a159d68033a8b073e5853acc50f03aa486a2888
 

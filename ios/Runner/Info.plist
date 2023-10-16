@@ -57,5 +57,9 @@
         <string>Need Location permission</string>
     <key>NSLocationWhenInUseUsageDescription</key>
         <string>Need Location permission</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+        <string>위치 접근 항상 허용</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+        <string>앱을 사용할 때만 허용</string>
 </dict>
 </plist>

@@ -6,17 +6,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'dart:math';
 import '../widget/timColumWidget.dart';
 
-class screen_table extends StatefulWidget {
-  const screen_table({Key? key}) : super(key: key);
+class screen_test extends StatefulWidget {
+  const screen_test({Key? key}) : super(key: key);
 
   @override
-  State<screen_table> createState() => _screen_tableState();
+  State<screen_test> createState() => _screen_testState();
 }
 
-class _screen_tableState extends State<screen_table> {
+class _screen_testState extends State<screen_test> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Timetable> clsList = [];
   tableProvider prov = tableProvider();
@@ -30,6 +30,9 @@ class _screen_tableState extends State<screen_table> {
 
   Future initUsers() async {
     clsList = await prov.getTable();
+  }
+  static Color randomOpaqueColor() {
+    return Color(Random().nextInt(0xffffffff)).withAlpha(0xff);
   }
 
   @override
@@ -63,10 +66,12 @@ class _screen_tableState extends State<screen_table> {
                   height: 400,
                   child: timeTableBuilder()),
 
-              Container(
+              SizedBox(
+                height: 80,
+                width: screenSize.width*0.95,
                 child: ElevatedButton(onPressed: () async {
                   await addLecture();
-                }, child: Text('강의 추가 하기')),
+                }, child: Text('강의 추가 하기',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
               ),
 
             ],
@@ -171,12 +176,13 @@ class _screen_tableState extends State<screen_table> {
   List<Widget> buildDayColumn(int index) {
     String currentDay = week[index];
     List<Widget> lecturesForTheDay = [];
+    Color randcolor=Colors.blue;
 
     for (var lecture in selectedLectures) {
       for (int i = 0; i < lecture.day.length; i++) {
 
-        double top = kFirstColumnHeight + (double.parse(lecture.start_t[i]) / 30.0) * kBoxSize;
-        double height = (double.parse(lecture.end_t[i]) - double.parse(lecture.start_t[i]) / 30.0) * kBoxSize;
+        double top = kFirstColumnHeight + (double.parse(lecture.start_t[i])/2.0) * kBoxSize;
+        double height = ((double.parse(lecture.end_t[i]) - double.parse(lecture.start_t[i]))/2.0) * kBoxSize;
 
         if (lecture.day[i] == currentDay) {
           lecturesForTheDay.add(
@@ -189,17 +195,18 @@ class _screen_tableState extends State<screen_table> {
                     setState(() {
                       selectedLectures.remove(lecture);
                       //setTimetableLength();
+                      randcolor=randomOpaqueColor();
                     });
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width / 5,
                     height: height,
                     decoration: const BoxDecoration(
-                      color: Colors.blue,
+                      color:Colors.deepOrange,
                       borderRadius: BorderRadius.all(Radius.circular(2)),
                     ),
                     child: Text(
-                      "${lecture.subjnm}\n${lecture.clsroom[i]}",
+                      "${lecture.subjnm}\n${lecture.clsroom}",
                       style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ),
@@ -351,45 +358,48 @@ class _screen_tableState extends State<screen_table> {
 
   Widget buildLectureWidget(Timetable cls, context){
     return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ElevatedButton(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: EdgeInsets.all(0.8),
-                child: Column(
-                  children: [
-                    Text(cls.subjno.toString(),
-                        style: TextStyle(fontSize: 15)),
-                    Text(cls.pronm.toString(),
-                        style: TextStyle(fontSize: 15)),
-                    Text(cls.clsroom.toString(),
-                        style: TextStyle(fontSize: 15)),
-                  ],
-                ),
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: EdgeInsets.all(0.8),
+              child: Column(
+                children: [
+                  Text(cls.subjno.toString(),
+                      style: TextStyle(fontSize: 15)),
+                  Text(cls.pronm.toString(),
+                      style: TextStyle(fontSize: 15)),
+                  Text(cls.clsroom.toString(),
+                      style: TextStyle(fontSize: 15)),
+                ],
               ),
-              Container(
-                padding: EdgeInsets.all(0.5),
-                child: Column(
-                  children: [
-                    Text('NAME:' + cls.subjnm.toString(),
-                        style: TextStyle(fontSize: 15)),
-                    Text('DAY:' + cls.day.toString(),
-                        style: TextStyle(fontSize: 15)),
-                    Text('TIME:' + cls.start_t.toString(),
-                        style: TextStyle(fontSize: 15)),
+            ),
+            Container(
+              padding: EdgeInsets.all(0.5),
+              child: Column(
+                children: [
+                  Text('NAME:' + cls.subjnm.toString(),
+                      style: TextStyle(fontSize: 15)),
+                  Text('DAY:' + cls.day.toString(),
+                      style: TextStyle(fontSize: 15)),
+                  Text('Start:' + cls.start_t.toString()+'End :'+cls.end_t.toString(),
+                      style: TextStyle(fontSize: 15)),
 
-                  ],
-                ),
+                ],
               ),
-            ],
-          ),
-          onPressed: ()async {
+            ),
+          ],
+        ),
+        onPressed: ()async {
+          selectedLectures.add(cls);
+          setState((){
+            print('setState 호출');
             selectedLectures.add(cls);
-            await timeTableBuilder();
-          },
-        )
+          });
+        },
+      )
     );
 
   }
