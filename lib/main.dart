@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dancheck/provider/beacon_scan_provider.dart';
 import 'package:dancheck/screen/screen_bluetooth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../screen/screen_login.dart';
 
@@ -17,10 +19,24 @@ void main() {
       Permission.bluetoothConnect,
       Permission.bluetoothScan
     ].request().then((status) {
-      runApp(const MyApp());
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => BeaconScanner()),
+          ],
+          child: MyApp(),
+        ),
+      );
     });
   } else {
-    runApp(const MyApp());
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => BeaconScanner()),
+        ],
+        child: MyApp(),
+      ),
+    );
   }
 }
 
