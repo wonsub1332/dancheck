@@ -1,5 +1,4 @@
-import 'package:dancheck/screen/screen_test.dart';
-import 'package:dancheck/screen/screen_user.dart';
+import 'package:dancheck/screen/screen_timeTable.dart';
 import 'package:dancheck/widget/attendentButton.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +96,7 @@ class _homeScreenState extends State<homeScreen> {
               ), // 메인 홈 화면
 
               Center(
-                child: screen_test(),   // 마이페이지
+                child: screen_timeTable(),   // 마이페이지
               ),
 
             ],

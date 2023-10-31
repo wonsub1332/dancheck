@@ -20,7 +20,6 @@ void main() {
       runApp(const MyApp());
     });
   } else {
-    WidgetsFlutterBinding.ensureInitialized();
     runApp(const MyApp());
   }
 }
