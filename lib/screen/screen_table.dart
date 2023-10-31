@@ -2,11 +2,11 @@ import 'package:dancheck/model/api_adapter.dart';
 import 'package:dancheck/model/model_timtTable.dart';
 import 'package:dancheck/model/model_user.dart';
 import 'package:dancheck/model/timeTableProvider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'dart:math';
+import '../model/db.dart';
 import '../widget/timColumWidget.dart';
 
 class screen_table extends StatefulWidget {
@@ -30,6 +30,8 @@ class _screen_tableState extends State<screen_table> {
 
   Future initUsers() async {
     clsList = await prov.getTable();
+    selectedLectures =await DatabaseHelper.instance.getTimetable();
+
   }
 
   @override
@@ -39,13 +41,14 @@ class _screen_tableState extends State<screen_table> {
     initUsers();
   }
 
-  int setTimetableLength(){
-    return 0;
+  Future<void> setInData() async {
+    selectedLectures =await DatabaseHelper.instance.getTimetable();
   }
 
 
   @override
   Widget build(BuildContext context) {
+
     Size screenSize = MediaQuery
         .of(context)
         .size;
@@ -59,15 +62,20 @@ class _screen_tableState extends State<screen_table> {
 
               SizedBox(height: height*0.15,),
               //Text('시간표',style: TextStyle(fontSize: 18,color: Colors.deepOrangeAccent),),
-              Container(
-                  height: 400,
-                  child: timeTableBuilder()),
 
               Container(
+                  height: 400,
+                  child: timeTableBuilder()
+              ),
+              SizedBox(
+                height: 80,
+                width: screenSize.width*0.95,
                 child: ElevatedButton(onPressed: () async {
                   await addLecture();
-                }, child: Text('강의 추가 하기')),
+                }, child: Text('강의 추가 하기',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
               ),
+
+
 
             ],
           ),
@@ -171,12 +179,14 @@ class _screen_tableState extends State<screen_table> {
   List<Widget> buildDayColumn(int index) {
     String currentDay = week[index];
     List<Widget> lecturesForTheDay = [];
+    Color randcolor=Colors.blue;
 
     for (var lecture in selectedLectures) {
+      print("lecture : "+lecture.subjnm);
       for (int i = 0; i < lecture.day.length; i++) {
 
-        double top = kFirstColumnHeight + (double.parse(lecture.start_t[i]) / 30.0) * kBoxSize;
-        double height = (double.parse(lecture.end_t[i]) - double.parse(lecture.start_t[i]) / 30.0) * kBoxSize;
+        double top = kFirstColumnHeight + (double.parse(lecture.start_t[i])/2.0) * kBoxSize;
+        double height = ((double.parse(lecture.end_t[i]) - double.parse(lecture.start_t[i]))/2.0) * kBoxSize;
 
         if (lecture.day[i] == currentDay) {
           lecturesForTheDay.add(
@@ -188,6 +198,7 @@ class _screen_tableState extends State<screen_table> {
                   onTap: () {
                     setState(() {
                       selectedLectures.remove(lecture);
+                      DatabaseHelper.instance.remove(lecture);
                       //setTimetableLength();
                     });
                   },
@@ -195,11 +206,11 @@ class _screen_tableState extends State<screen_table> {
                     width: MediaQuery.of(context).size.width / 5,
                     height: height,
                     decoration: const BoxDecoration(
-                      color: Colors.blue,
+                      color:Colors.deepOrange,
                       borderRadius: BorderRadius.all(Radius.circular(2)),
                     ),
                     child: Text(
-                      "${lecture.subjnm}\n${lecture.clsroom[i]}",
+                      "${lecture.subjnm}\n${lecture.clsroom}",
                       style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ),
@@ -377,7 +388,7 @@ class _screen_tableState extends State<screen_table> {
                         style: TextStyle(fontSize: 15)),
                     Text('DAY:' + cls.day.toString(),
                         style: TextStyle(fontSize: 15)),
-                    Text('TIME:' + cls.start_t.toString(),
+                    Text('Start:' + cls.start_t.toString()+'End :'+cls.end_t.toString(),
                         style: TextStyle(fontSize: 15)),
 
                   ],
@@ -387,7 +398,11 @@ class _screen_tableState extends State<screen_table> {
           ),
           onPressed: ()async {
             selectedLectures.add(cls);
-            await timeTableBuilder();
+            setState((){
+              print('setState 호출');
+              selectedLectures.add(cls);
+              DatabaseHelper.instance.add_raw(cls);
+            });
           },
         )
     );

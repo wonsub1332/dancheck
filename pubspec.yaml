@@ -38,6 +38,9 @@ dependencies:
   rive:
   permission_handler:
   http:
+  path:
+  sqflite:
+  path_provider:
 
 
   # The following adds the Cupertino Icons font to your application.
