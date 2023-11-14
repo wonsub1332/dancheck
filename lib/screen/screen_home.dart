@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:timer_builder/timer_builder.dart';
 import '../screen/screen_table.dart';
+import '../screen/screen_save.dart';
 import '../screen/screen_bluetooth.dart';
 
 
@@ -102,12 +103,20 @@ class _homeScreenState extends State<homeScreen> {
                          },
                          icon: Icon(Icons.help),
                      )
+                     ,
+                     IconButton(
+                       onPressed: (){
+
+                       },
+                       icon: Icon(Icons.save),
+                     ),
                    ],
                  )
               ), // 메인 홈 화면
 
               Center(
-                child: screen_user()// 마이페이지
+                child: //screen_user() 마이페이지
+                        screen_save()
               ),
 
             ],

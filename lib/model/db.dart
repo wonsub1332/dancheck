@@ -34,7 +34,9 @@ class DatabaseHelper {
       start_t TEXT,
       clsroom TEXT,
       beaconid TEXT,
-      end_t TEXT
+      end_t TEXT,
+      att_t TEXT,
+      out_t TEXT
     )
     ''');
   }
@@ -58,7 +60,7 @@ class DatabaseHelper {
   }
   Future<int> add_raw(Timetable tt) async {
     Database db = await instance.database;
-    return await db.rawInsert('''INSERT INTO timeTables(subjno,subjnm, pronm, day, start_t, clsroom, beaconid, end_t) VALUES ( CAST('${tt.subjno}' AS INTEGER), '${tt.subjnm}', '${tt.pronm}', '${tt.day.toString().substring(1,tt.day.toString().length - 1)}', '${tt.start_t.toString().substring(1,tt.start_t.toString().length - 1)}', '${tt.clsroom}', '${tt.beaconid}', '${tt.end_t.toString().substring(1,tt.end_t.toString().length-1)}')'''
+    return await db.rawInsert('''INSERT INTO timeTables(subjno,subjnm, pronm, day, start_t, clsroom, beaconid, end_t, att_t,out_t) VALUES ( CAST('${tt.subjno}' AS INTEGER), '${tt.subjnm}', '${tt.pronm}', '${tt.day.toString().substring(1,tt.day.toString().length - 1)}', '${tt.start_t.toString().substring(1,tt.start_t.toString().length - 1)}', '${tt.clsroom}', '${tt.beaconid}', '${tt.end_t.toString().substring(1,tt.end_t.toString().length-1)}','${tt.att_t.toString().substring(1,tt.att_t.toString().length-1)}','${tt.out_t.toString().substring(1,tt.out_t.toString().length-1)}')'''
     );
   }
   Future<List<Timetable>> sd() async {
@@ -83,6 +85,8 @@ class DatabaseHelper {
         clsroom: data[i]['clsroom'],
         beaconid: data[i]['beaconid'],
         end_t: data[i]['end_t'].split(','),
+        att_t: data[i]['att_t'].split(','),
+        out_t: data[i]['out_t'].split(','),
       );
     });
   }
