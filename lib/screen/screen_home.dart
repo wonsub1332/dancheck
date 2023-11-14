@@ -1,4 +1,5 @@
 //import 'package:dancheck/screen/screen_timeTable.dart';
+import 'package:dancheck/screen/screen_user.dart';
 import 'package:dancheck/widget/attendentButton.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class _homeScreenState extends State<homeScreen> {
 
                      SizedBox( height: height*0.025,),//여백용
 
-                     attButton(state: false,),
+                     //attButton(state: false,),
 
                      Container(
                        padding: EdgeInsets.all(30),
@@ -83,7 +84,17 @@ class _homeScreenState extends State<homeScreen> {
                                context: context,
                                builder: (BuildContext context){
                                  return AlertDialog(
-                                   content: Text("dsds"),
+                                   content: SizedBox(
+                                     height: 90,
+                                     child: Column(
+                                     children: const [
+                                       Text("도움말",style: TextStyle(fontWeight: FontWeight.bold),),
+                                       Text(""),
+                                       Text("비콘을 찾게 된다면"),
+                                       Text("출석 버튼이 활성화 됩니다."),
+                                     ],
+                                   ),
+                                   ),
                                    insetPadding: EdgeInsets.fromLTRB(0, 80, 0, 80)
                                  );
                                }
@@ -96,7 +107,7 @@ class _homeScreenState extends State<homeScreen> {
               ), // 메인 홈 화면
 
               Center(
-                child: Text("djis")// 마이페이지
+                child: screen_user()// 마이페이지
               ),
 
             ],

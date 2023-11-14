@@ -1,82 +1,69 @@
-import 'package:dancheck/model/api_adapter.dart';
-import 'package:dancheck/model/model_user.dart';
-import 'package:dancheck/model/userProvider.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-class screen_timeTable extends StatefulWidget {
-  const screen_timeTable({Key? key}) : super(key: key);
+class screen_user extends StatefulWidget {
+  const screen_user({Key? key}) : super(key: key);
 
   @override
-  State<screen_timeTable> createState() => _screen_timeTableState();
+  State<screen_user> createState() => _screen_userState();
 }
 
-class _screen_timeTableState extends State<screen_timeTable> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<User> users=[];
-  userProvider up= userProvider();
-
-
-  Future initUsers() async{
-    users= await up.getUser();
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    initUsers();
-  }
-
-
+class _screen_userState extends State<screen_user> {
+  static const double marginValue = 5.0;
+  static const double paddingValue = 0.28;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child:
-            FutureBuilder<List<User>>(
-              future: up.getUser(),
-                builder: (context, snapshot) {
-                  final List<User>? users=snapshot.data;
-                  print("In FutureBuilder : "+users.toString());
-
-                  if(snapshot.hasData){
-                    return ListView.builder(
-                        itemCount: users?.length,
-                        itemBuilder: (context,index){
-                          final user=users![index];
-                          return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              child: Column(
-                                children: [
-                                  Text('ID:' + user.id.toString(),
-                                      style: TextStyle(fontSize: 20)),
-                                  Text('NAME:' + user.name.toString(),
-                                      style: TextStyle(fontSize: 20)),
-                                  Text('EMAIL:' + user.email.toString(),
-                                      style: TextStyle(fontSize: 20)),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                    );
-                  }
-                  else if (snapshot.hasError){
-                    return Text("${snapshot.error}에러!!");
-                  }
-                  return CircularProgressIndicator();
-                },
-
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(paddingValue),
+          child: Card(
+            margin: EdgeInsets.all(marginValue),
+            child: SizedBox(
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: const[
+                  Text("마이페이지"),
+                  Icon(Icons.people),
+                ],
+              ),
             )
+          ),
         ),
+        Padding(
+          padding: const EdgeInsets.all(paddingValue),
+          child: Card(
+              margin: EdgeInsets.all(marginValue),
+              child: SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: const[
+                    Text("출석 확인"),
+                    Icon(Icons.playlist_add_check),
+                  ],
+                ),
+              )
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(paddingValue),
+          child: Card(
+              margin: EdgeInsets.all(marginValue),
+              child: SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: const[
+                    Text("이의신청"),
+                    Icon(Icons.how_to_vote),
+                  ],
+                ),
+              )
+          ),
+        ),
+      ],
     );
-
-
-
   }
 }
-
