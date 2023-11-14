@@ -20,7 +20,7 @@ class attendanceProvider{
   Future<String> postAtt(Attendance att) async {
     try {
       var response = await http.post(
-        Uri.parse('http://18.217.3.173:8000/check/post/'),
+        Uri.parse('http://18.217.3.173:8000/check/att_save/'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           "Referer": "http://18.217.3.173:8000"

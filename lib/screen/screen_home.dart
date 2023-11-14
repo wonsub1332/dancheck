@@ -1,10 +1,14 @@
 //import 'package:dancheck/screen/screen_timeTable.dart';
+import 'package:dancheck/screen/screen_login.dart';
 import 'package:dancheck/screen/screen_user.dart';
 import 'package:dancheck/widget/attendentButton.dart';
 import 'package:date_format/date_format.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
+import '../model/model_attendance.dart';
 import '../screen/screen_table.dart';
 import '../screen/screen_save.dart';
 import '../screen/screen_bluetooth.dart';
@@ -32,6 +36,15 @@ class _homeScreenState extends State<homeScreen> {
     double width = screenSize.width;
     double height = screenSize.height;
     bool classroomEQ = false;
+    late Attendance att;
+
+    int _subjno=0;
+    int _stuno=0;
+    String _classday='';
+    String _atime='';
+    String _rtime='';
+    int _check=0;
+
 
     return WillPopScope(
         onWillPop: ()  {
@@ -41,8 +54,52 @@ class _homeScreenState extends State<homeScreen> {
       home: DefaultTabController(
         length: 3,
         child: Scaffold(
-          appBar: AppBar(
-            title: Text('DANCHECK'),
+          appBar: CupertinoNavigationBar(
+            middle: const Text('DCHECK'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 로그아웃 기능
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: const Icon(
+                    Icons.logout,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    showCupertinoModalPopup<void>(
+                      context: context,
+                      builder: (BuildContext context) => CupertinoAlertDialog(
+                        title: const Text('알림'),
+                        content: const Text('로그아웃하시겠습니까?'),
+                        actions: <CupertinoDialogAction>[
+                          CupertinoDialogAction(
+                            isDefaultAction: true,
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('아니오'),
+                          ),
+                          CupertinoDialogAction(
+                            isDestructiveAction: true,
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                              await prefs.remove('token');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (builder) => LoginMainPage(),
+                                ),
+                              );
+                            },
+                            child: Text('예'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
           body: TabBarView(
             children: [
