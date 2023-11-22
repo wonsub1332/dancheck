@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'model_user.dart';
+import 'model_Students.dart';
 import 'model_timtTable.dart';
 
-List<User> parseUser(String reponseBody){
+List<Students> parseUser(String reponseBody){
   final parsed= json.decode(reponseBody).cast<Map<String,dynamic>>();
-  return parsed.map<User>((json)=> User.fromJson(json)).toList();
+  return parsed.map<Students>((json)=> Students.fromJson(json)).toList();
 }
 
 List<Timetable> parseTime(String reponseBody){
@@ -12,7 +12,7 @@ List<Timetable> parseTime(String reponseBody){
   return parsed.map<Timetable>((json)=> Timetable.fromJson(json)).toList();
 }
 
-List<User> parseAtt(String reponseBody){
+List<Students> parseAtt(String reponseBody){
   final parsed= json.decode(reponseBody).cast<Map<String,dynamic>>();
-  return parsed.map<User>((json)=> User.fromJson(json)).toList();
+  return parsed.map<Students>((json)=> Students.fromJson(json)).toList();
 }

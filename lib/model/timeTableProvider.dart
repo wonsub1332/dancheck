@@ -18,4 +18,16 @@ class tableProvider{
     }
   }
 
+  Future<List<Timetable>> getTableID(id) async {
+    Uri uri = Uri.parse('http://18.217.3.173:8000/check/enroll/'+id+'/?format=json');
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      final data = json.decode(utf8.decode(response.bodyBytes)) as List<dynamic>;
+      print ('getTable: '+data.toString());
+      return data.map<Timetable>((json) => Timetable.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load post list');
+    }
+  }
+
 }

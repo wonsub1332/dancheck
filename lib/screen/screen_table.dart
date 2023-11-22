@@ -1,6 +1,6 @@
 import 'package:dancheck/model/api_adapter.dart';
 import 'package:dancheck/model/model_timtTable.dart';
-import 'package:dancheck/model/model_user.dart';
+import 'package:dancheck/model/model_Students.dart';
 import 'package:dancheck/model/timeTableProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

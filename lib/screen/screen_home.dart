@@ -12,6 +12,7 @@ import '../model/model_attendance.dart';
 import '../screen/screen_table.dart';
 import '../screen/screen_save.dart';
 import '../screen/screen_bluetooth.dart';
+import '../model/SharedData.dart';
 
 
 import '../widget/timColumWidget.dart';
@@ -20,15 +21,14 @@ import '../widget/timColumWidget.dart';
 const Color activeColor = Color.fromARGB(255, 5, 63, 138);
 const Color inactiveColor = Color.fromRGBO(237, 210, 170, 1.0);
 
-class homeScreen extends StatefulWidget {
-  const homeScreen({Key? key}) : super(key: key);
+class homeScreen extends StatefulWidget{
+  homeScreen({Key? key}) : super(key: key);
 
   @override
   State<homeScreen> createState() => _homeScreenState();
 }
 
 class _homeScreenState extends State<homeScreen> {
-  //변수
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +56,7 @@ class _homeScreenState extends State<homeScreen> {
         child: Scaffold(
           appBar: CupertinoNavigationBar(
             middle: const Text('DCHECK'),
+            leading: textID(),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -84,6 +85,7 @@ class _homeScreenState extends State<homeScreen> {
                               SharedPreferences prefs =
                               await SharedPreferences.getInstance();
                               await prefs.remove('token');
+                              await SharedData.delData();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -116,8 +118,8 @@ class _homeScreenState extends State<homeScreen> {
                      classroomText(width,classroomEQ),
 
                      SizedBox( height: height*0.025,),//여백용
-
                      //attButton(state: false,),
+                     textID(),
 
                      Container(
                        padding: EdgeInsets.all(30),
@@ -161,19 +163,13 @@ class _homeScreenState extends State<homeScreen> {
                          icon: Icon(Icons.help),
                      )
                      ,
-                     IconButton(
-                       onPressed: (){
-
-                       },
-                       icon: Icon(Icons.save),
-                     ),
                    ],
                  )
               ), // 메인 홈 화면
 
               Center(
-                child: //screen_user() 마이페이지
-                        screen_save()
+                child: screen_user() //마이페이지
+                        //screen_save()
               ),
 
             ],
@@ -249,6 +245,15 @@ class _homeScreenState extends State<homeScreen> {
       );
     }
   }
+  Widget textID(){
+    return FutureBuilder<String>(
+        future: SharedData.getData(),
+        builder: (context, snapshot) {
+          final String? id = snapshot.data;
+          return Text("ID:"+id!,style: TextStyle(fontWeight: FontWeight.bold),);
+    }
+    );
+    }
 
 
 }

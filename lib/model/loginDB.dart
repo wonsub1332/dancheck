@@ -1,6 +1,6 @@
 import 'package:crypto/crypto.dart'; // password hashing algorithms
 import 'dart:convert';
-import 'package:dancheck/model/model_user.dart';
+import 'package:dancheck/model/model_Students.dart';
 import 'package:http/http.dart'as http;
 
 String hashPassword(String password) {
@@ -13,7 +13,7 @@ String hashPassword(String password) {
 Future<void> insertMember(int uid, String password, String name) async {
 
   final hash = hashPassword(password);
-  User user= User(id:uid,pw:hash,name:name);
+  Students stu= Students(id:uid,pw:hash,name:name);
 
   // DB에 유저 정보 추가
   try {
@@ -24,7 +24,7 @@ Future<void> insertMember(int uid, String password, String name) async {
         'Content-Type': 'application/json',
         "Referer": "http://18.217.3.173:8000"
       },
-      body: jsonEncode(user.toJSON()),
+      body: jsonEncode(stu.toJSON()),
     );
   } catch (e) {
     print('Error : $e');

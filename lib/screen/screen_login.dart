@@ -4,6 +4,7 @@ import './screen_home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './memberRegisterPage.dart';
 import '../model/loginDB.dart';
+import '../model/SharedData.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({super.key});
@@ -12,6 +13,8 @@ class loginScreen extends StatefulWidget {
 }
 class _loginScreenState extends State<loginScreen> {
   bool isToken = false;
+
+  String get loginCheck => loginCheck;
   @override
   void initState() {
     super.initState();
@@ -64,6 +67,7 @@ class _LoginState extends State<LoginPage> {
   // 아이디와 비밀번호 정보
   final TextEditingController userIdController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  late String loginCheck;
 
   // 자동 로그인 설정
   void _setAutoLogin(String token) async {
@@ -77,6 +81,7 @@ class _LoginState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -165,9 +170,10 @@ class _LoginState extends State<LoginPage> {
                     width: 250,
                     child: ElevatedButton(
                       onPressed: () async {
-                        final loginCheck = await login(
-                            int.parse(userIdController.text) , passwordController.text);
+                        loginCheck = (await login(
+                            int.parse(userIdController.text) , passwordController.text))!;
                         print(loginCheck);
+
 
                         // 로그인 확인
                         if (loginCheck == '-1') {
@@ -191,10 +197,11 @@ class _LoginState extends State<LoginPage> {
                           );
                         } else {
                           print('로그인 성공');
+                          SharedData.updateID(loginCheck);
 
                           // 자동 로그인 확인
                           if (switchValue == true) {
-                            _setAutoLogin(loginCheck!);
+                            _setAutoLogin(loginCheck);
                           } else {
                             _delAutoLogin();
                           }
