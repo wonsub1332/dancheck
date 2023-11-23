@@ -24,9 +24,11 @@ class _loginScreenState extends State<loginScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
 
+
     if (token != null) {
       setState(() {
         isToken = true;
+        prefs.setString("STUID",loginCheck);
       });
     }
   }
@@ -197,7 +199,8 @@ class _LoginState extends State<LoginPage> {
                           );
                         } else {
                           print('로그인 성공');
-                          SharedData.updateID(loginCheck);
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.setString("STUID",loginCheck);
 
                           // 자동 로그인 확인
                           if (switchValue == true) {
@@ -207,10 +210,10 @@ class _LoginState extends State<LoginPage> {
                           }
 
                           // 메인 페이지로 이동
-                          Navigator.push(
-                            context,
+                          Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => homeScreen(),
+                              settings: RouteSettings(arguments: loginCheck),
                             ),
                           );
                         }

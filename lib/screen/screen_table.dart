@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:dancheck/model/api_adapter.dart';
 import 'package:dancheck/model/model_timtTable.dart';
 import 'package:dancheck/model/model_Students.dart';
 import 'package:dancheck/provider/enrollProvider.dart';
 import 'package:dancheck/provider/timeTableProvider.dart';
+import 'package:dancheck/screen/screen_home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:math';
 import '../model/SharedData.dart';
@@ -12,8 +16,9 @@ import '../model/db.dart';
 import '../widget/timColumWidget.dart';
 
 class screen_table extends StatefulWidget {
-  const screen_table({Key? key}) : super(key: key);
 
+  const screen_table({required this.arguments,Key? key,}) : super(key: key);
+  final String arguments;
   @override
   State<screen_table> createState() => _screen_tableState();
 }
@@ -28,24 +33,23 @@ class _screen_tableState extends State<screen_table> {
   double kFirstColumnHeight = 20;
   double kBoxSize = 60;
   Set<Timetable> selectedLectures={};
-  String stuId ="32180879";
+  String? stuId;
 
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
-    Future f=prov.getTableID(stuId);
+    String id=widget.arguments;
+    stuId=id;
+    Future f=prov.getTableID(id);
     f.then((value) {
       selectedLectures = value;
       setState((){
         print('setState 호출');
       });
-    }
-    );
-    f.catchError((onError)=>print(onError));
-
+    });
+    super.initState();
   }
-
+  
   Future<void> setInData() async {
     selectedLectures =await DatabaseHelper.instance.getTimetable();
   }
@@ -55,44 +59,56 @@ class _screen_tableState extends State<screen_table> {
   @override
   Widget build(BuildContext context) {
 
+
     Size screenSize = MediaQuery
         .of(context)
         .size;
     double width = screenSize.width;
     double height = screenSize.height;
-    return Scaffold(
-        body: SingleChildScrollView(
+    return ListView(
+        children:[SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
 
-              SizedBox(height: height*0.15,),
               //Text('시간표',style: TextStyle(fontSize: 18,color: Colors.deepOrangeAccent),),
 
               Container(
-                  height: 400,
+                  height: height*0.5,
                   child: timeTableBuilder()
               ),
               SizedBox(
-                height: 80,
-                width: screenSize.width*0.95,
-                child: ElevatedButton(onPressed: () async {
-                  await addLecture();
-                }, child: Text('강의 추가 하기',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
-              ),
-              SizedBox(
-                height: 80,
-                width: screenSize.width*0.95,
-                child: ElevatedButton(onPressed: () async {
-                  await update(context,stuId);
-                }, child: Text('시간표 업로드',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
-              ),
+                height: height*0.3,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        height: 80,
+                        width: screenSize.width*0.95,
+                        child: ElevatedButton(onPressed: () async {
+                          await addLecture();
+                        }, child: Text('강의 추가 하기',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 80,
+                      width: screenSize.width*0.95,
+                      child: ElevatedButton(onPressed: () async {
+                        await update(context,stuId);
+                      }, child: Text('시간표 업로드',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
+                    ),
+                  ],
+                ),
+              )
+
 
 
 
             ],
           ),
-        )
+        )]
     );
   }
 

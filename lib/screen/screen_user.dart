@@ -7,8 +7,8 @@ import 'package:dancheck/provider/timeTableProvider.dart';
 import '../model/SharedData.dart';
 
 class screen_user extends StatefulWidget {
-  const screen_user({Key? key}) : super(key: key);
-
+  screen_user({required this.id ,Key? key}) : super(key: key);
+  String id;
   @override
   State<screen_user> createState() => _screen_userState();
 }
@@ -20,13 +20,8 @@ class _screen_userState extends State<screen_user> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future<String> future=SharedData.getData();
-    future.then((value) =>
-      stuId=value
-    );
-    future.catchError((error)=>
-      print(error)
-    );
+    String ii=widget.id;
+    stuId=ii;
   }
 
   static const double marginValue = 5.0;
@@ -90,6 +85,7 @@ class _screen_userState extends State<screen_user> {
       ],
     );
   }
+  //===============================================================================
 
   Future viewTable() async{
     return showModalBottomSheet(
@@ -279,5 +275,7 @@ class _screen_userState extends State<screen_user> {
         )
     );
   }
+
+
 
 }//class close

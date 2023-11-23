@@ -29,7 +29,6 @@ class homeScreen extends StatefulWidget{
 }
 
 class _homeScreenState extends State<homeScreen> {
-  late String stuId="32180879";
   @override
   void initState() {
     // TODO: implement initState
@@ -38,6 +37,8 @@ class _homeScreenState extends State<homeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final arguments = ModalRoute.of(context)!.settings.arguments;
+
     Size screenSize = MediaQuery.of(context).size;
     double width = screenSize.width;
     double height = screenSize.height;
@@ -61,7 +62,7 @@ class _homeScreenState extends State<homeScreen> {
         child: Scaffold(
           appBar: CupertinoNavigationBar(
             middle: const Text('DCHECK'),
-            leading: Text("ID:$stuId",style: TextStyle(fontWeight: FontWeight.bold)),
+            leading: Text("ID:$arguments",style: TextStyle(fontWeight: FontWeight.bold)),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -112,7 +113,7 @@ class _homeScreenState extends State<homeScreen> {
             children: [
 
               Container(
-                child: screen_table(),
+                child: screen_table(arguments: arguments.toString(),),
               ),
               Container(
                  child: Column(
@@ -124,6 +125,7 @@ class _homeScreenState extends State<homeScreen> {
 
                      SizedBox( height: height*0.025,),//여백용
                      //attButton(state: false,)
+                     Text(arguments.toString()),
 
                      Container(
                        padding: EdgeInsets.all(30),
@@ -172,7 +174,7 @@ class _homeScreenState extends State<homeScreen> {
               ), // 메인 홈 화면
 
               Center(
-                child: screen_user() //마이페이지
+                child: screen_user(id: arguments.toString(),) //마이페이지
                         //screen_save()
               ),
 
