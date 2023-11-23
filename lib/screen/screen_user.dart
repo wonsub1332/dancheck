@@ -1,9 +1,8 @@
-import 'package:dancheck/model/attendanceProvider.dart';
+import 'package:dancheck/provider/attendanceProvider.dart';
 import 'package:dancheck/model/model_attendance.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dancheck/model/model_timtTable.dart';
-import 'package:dancheck/model/timeTableProvider.dart';
+import 'package:dancheck/provider/timeTableProvider.dart';
 
 import '../model/SharedData.dart';
 
@@ -23,7 +22,7 @@ class _screen_userState extends State<screen_user> {
     super.initState();
     Future<String> future=SharedData.getData();
     future.then((value) =>
-      stuid=value
+      stuId=value
     );
     future.catchError((error)=>
       print(error)
@@ -34,8 +33,8 @@ class _screen_userState extends State<screen_user> {
   static const double paddingValue = 0.28;
   List<Timetable> clsList = [];
   tableProvider prov = tableProvider();
-  attendanceProvider att_prov = attendanceProvider();
-  late String stuid;
+  attendanceProvider attProv = attendanceProvider();
+  late String stuId='32180879';
   bool isState=false;
 
 
@@ -73,7 +72,7 @@ class _screen_userState extends State<screen_user> {
           child: Card(
               margin: EdgeInsets.all(marginValue),
               child: InkWell(
-                onTap: (){},
+                onTap: () async{},
                 child: SizedBox(
                   height: height*0.35,
                   child: Column(
@@ -91,64 +90,6 @@ class _screen_userState extends State<screen_user> {
       ],
     );
   }
-  Widget textID(){
-    return FutureBuilder<String>(
-        future: SharedData.getData(),
-        builder: (context, snapshot) {
-          final String? id = snapshot.data;
-          stuid=id!;
-          return Text("In FutureBuilder : " + id!);
-        }
-    );
-  }
-  Future test() async{
-    ValueNotifier<String> searchTermNotifier = ValueNotifier<String>("");
-    return ListView.builder(
-        itemBuilder:(BuildContext context,int){
-          return Column(
-            children: [
-              Expanded(
-                child: FutureBuilder<List<Timetable>>(
-                  future: prov.getTableID(stuid),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return Text("Error: ${snapshot.error}");
-                      }
-
-                      List<Timetable> allSubjects = snapshot.data!;
-
-                      return ValueListenableBuilder<String>(
-                        valueListenable: searchTermNotifier,
-                        builder: (context, value, child) {
-                          List<Timetable> filteredSubjects = allSubjects
-                              .where((subject) =>
-                              subject.subjnm.contains(value))
-                              .toList();
-
-                          return ListView.builder(
-                            itemCount: filteredSubjects.length,
-                            itemBuilder: (context, index) {
-                              return buildLectureWidget(
-                                  filteredSubjects[index], context);
-                            },
-                          );
-                        },
-                      );
-                    } else {
-                      return const Center(
-                          child: CircularProgressIndicator());
-                    }
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-
-    );
-  }
 
   Future viewTable() async{
     return showModalBottomSheet(
@@ -161,8 +102,8 @@ class _screen_userState extends State<screen_user> {
                 Column(
                   children: [
                     Expanded(
-                      child: FutureBuilder<List<Timetable>>(
-                      future: prov.getTableID(stuid),
+                      child: FutureBuilder<Set<Timetable>>(
+                      future: prov.getTableID(stuId),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.done) {
@@ -170,7 +111,7 @@ class _screen_userState extends State<screen_user> {
                             return Text("Error: ${snapshot.error}");
                           }
 
-                          List<Timetable> allSubjects = snapshot.data!;
+                          Set<Timetable> allSubjects = snapshot.data!;
 
                           return ValueListenableBuilder<String>(
                             valueListenable: searchTermNotifier,
@@ -260,7 +201,7 @@ class _screen_userState extends State<screen_user> {
                     Text(subjnm.toString(),style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold)),
                     Expanded(
                       child: FutureBuilder<List<Attendance>>(
-                        future: att_prov.getAtt(stuid,subjno),
+                        future: attProv.getAtt(stuId,subjno),
 
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -338,4 +279,5 @@ class _screen_userState extends State<screen_user> {
         )
     );
   }
+
 }//class close

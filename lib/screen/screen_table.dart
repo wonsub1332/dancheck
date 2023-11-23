@@ -1,11 +1,13 @@
 import 'package:dancheck/model/api_adapter.dart';
 import 'package:dancheck/model/model_timtTable.dart';
 import 'package:dancheck/model/model_Students.dart';
-import 'package:dancheck/model/timeTableProvider.dart';
+import 'package:dancheck/provider/enrollProvider.dart';
+import 'package:dancheck/provider/timeTableProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
+import '../model/SharedData.dart';
 import '../model/db.dart';
 import '../widget/timColumWidget.dart';
 
@@ -18,32 +20,36 @@ class screen_table extends StatefulWidget {
 
 class _screen_tableState extends State<screen_table> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Timetable> clsList = [];
+  Set<Timetable> clsList = {};
   tableProvider prov = tableProvider();
 
   List week = ['월', '화', '수', '목', '금'];
   var kColumnLength = 22;
   double kFirstColumnHeight = 20;
   double kBoxSize = 60;
-  List<Timetable> selectedLectures=[];
-
-
-  Future initUsers() async {
-    clsList = await prov.getTable();
-    selectedLectures =await DatabaseHelper.instance.getTimetable();
-
-  }
+  Set<Timetable> selectedLectures={};
+  String stuId ="32180879";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    initUsers();
+    Future f=prov.getTableID(stuId);
+    f.then((value) {
+      selectedLectures = value;
+      setState((){
+        print('setState 호출');
+      });
+    }
+    );
+    f.catchError((onError)=>print(onError));
+
   }
 
   Future<void> setInData() async {
     selectedLectures =await DatabaseHelper.instance.getTimetable();
   }
+
 
 
   @override
@@ -74,74 +80,19 @@ class _screen_tableState extends State<screen_table> {
                   await addLecture();
                 }, child: Text('강의 추가 하기',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
               ),
+              SizedBox(
+                height: 80,
+                width: screenSize.width*0.95,
+                child: ElevatedButton(onPressed: () async {
+                  await update(context,stuId);
+                }, child: Text('시간표 업로드',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
+              ),
 
 
 
             ],
           ),
         )
-    );
-  }
-
-  Widget tableList() {
-    return FutureBuilder<List<Timetable>>(
-      future: prov.getTable(),
-      builder: (context, snapshot) {
-        final List<Timetable>? list = snapshot.data;
-        print("In FutureBuilder : " + list.toString());
-
-        if (snapshot.hasData) {
-          return ListView.builder(
-
-            itemCount: list?.length,
-            itemBuilder: (context, index) {
-              final cls = list![index];
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(0.8),
-                        child: Column(
-                          children: [
-                            Text(cls.subjno.toString(),
-                                style: TextStyle(fontSize: 15)),
-                            Text(cls.pronm.toString(),
-                                style: TextStyle(fontSize: 15)),
-                            Text(cls.clsroom.toString(),
-                                style: TextStyle(fontSize: 15)),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(0.5),
-                        child: Column(
-                          children: [
-                            Text('NAME:' + cls.subjnm.toString(),
-                                style: TextStyle(fontSize: 15)),
-                            Text('DAY:' + cls.day.toString(),
-                                style: TextStyle(fontSize: 15)),
-                            Text('TIME:' + cls.start_t.toString(),
-                                style: TextStyle(fontSize: 15)),
-
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        }
-        else if (snapshot.hasError) {
-          return Text("${snapshot.error}에러!!");
-        }
-        return CircularProgressIndicator();
-      },
-
     );
   }
 
@@ -318,7 +269,7 @@ class _screen_tableState extends State<screen_table> {
                 ),
               ),
               Expanded(
-                child: FutureBuilder<List<Timetable>>(
+                child: FutureBuilder<Set<Timetable>>(
                   future: prov.getTable(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState ==
@@ -327,7 +278,7 @@ class _screen_tableState extends State<screen_table> {
                         return Text("Error: ${snapshot.error}");
                       }
 
-                      List<Timetable> allSubjects = snapshot.data!;
+                      Set<Timetable> allSubjects = snapshot.data!;
 
                       return ValueListenableBuilder<String>(
                         valueListenable: searchTermNotifier,
@@ -368,7 +319,8 @@ class _screen_tableState extends State<screen_table> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.all(0.8),
+                width: MediaQuery.of(context).size.width*0.2,
+                padding: EdgeInsets.all(0.08),
                 child: Column(
                   children: [
                     Text(cls.subjno.toString(),
@@ -381,15 +333,22 @@ class _screen_tableState extends State<screen_table> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(0.5),
+                width: MediaQuery.of(context).size.width*0.6,
+                padding: EdgeInsets.all(0.08),
                 child: Column(
                   children: [
-                    Text('NAME:' + cls.subjnm.toString(),
+                    Text(cls.subjnm.toString(),
                         style: TextStyle(fontSize: 15)),
-                    Text('DAY:' + cls.day.toString(),
-                        style: TextStyle(fontSize: 15)),
-                    Text('Start:' + cls.start_t.toString()+'End :'+cls.end_t.toString(),
-                        style: TextStyle(fontSize: 15)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(cls.day.toString(),
+                            style: TextStyle(fontSize: 15)),
+                        Text(cls.start_t.toString()+' '+cls.end_t.toString(),
+                            style: TextStyle(fontSize: 15)),
+                      ],
+                    )
+
 
                   ],
                 ),
@@ -408,6 +367,31 @@ class _screen_tableState extends State<screen_table> {
     );
 
   }
+
+  Future update(context,id){
+    ValueNotifier<String> searchTermNotifier = ValueNotifier<String>("");
+    enrollProvider enrollProv=enrollProvider();
+    enrollProv.delEnroll(id);
+    enrollProv.updateEnroll(id, selectedLectures);
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height*0.038,
+                child: Column(
+                  children: const[
+                    Text("업로드 완료",style: TextStyle(fontFamily: "SOYO",fontWeight: FontWeight.bold,fontSize: 20)),
+                  ],
+                ),
+              ),
+              insetPadding: EdgeInsets.fromLTRB(0, 80, 0, 80)
+          );
+        }
+    );
+  }
+
+
 
 
 

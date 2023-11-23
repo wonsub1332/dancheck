@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../model/model_attendance.dart';
-import '../model/attendanceProvider.dart';
+import '../provider/attendanceProvider.dart';
 
 class screen_save extends StatefulWidget {
   const screen_save({Key? key}) : super(key: key);

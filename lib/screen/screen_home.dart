@@ -29,6 +29,12 @@ class homeScreen extends StatefulWidget{
 }
 
 class _homeScreenState extends State<homeScreen> {
+  late String stuId="32180879";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +51,6 @@ class _homeScreenState extends State<homeScreen> {
     String _rtime='';
     int _check=0;
 
-
     return WillPopScope(
         onWillPop: ()  {
       return Future(() => false); //뒤로가기 막음
@@ -56,7 +61,7 @@ class _homeScreenState extends State<homeScreen> {
         child: Scaffold(
           appBar: CupertinoNavigationBar(
             middle: const Text('DCHECK'),
-            leading: textID(),
+            leading: Text("ID:$stuId",style: TextStyle(fontWeight: FontWeight.bold)),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -118,8 +123,7 @@ class _homeScreenState extends State<homeScreen> {
                      classroomText(width,classroomEQ),
 
                      SizedBox( height: height*0.025,),//여백용
-                     //attButton(state: false,),
-                     textID(),
+                     //attButton(state: false,)
 
                      Container(
                        padding: EdgeInsets.all(30),
@@ -245,15 +249,5 @@ class _homeScreenState extends State<homeScreen> {
       );
     }
   }
-  Widget textID(){
-    return FutureBuilder<String>(
-        future: SharedData.getData(),
-        builder: (context, snapshot) {
-          final String? id = snapshot.data;
-          return Text("ID:${id!}",style: TextStyle(fontWeight: FontWeight.bold),);
-    }
-    );
-    }
-
 
 }

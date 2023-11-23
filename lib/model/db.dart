@@ -63,19 +63,19 @@ class DatabaseHelper {
     return await db.rawInsert('''INSERT INTO timeTables(subjno,subjnm, pronm, day, start_t, clsroom, beaconid, end_t, att_t,out_t) VALUES ( CAST('${tt.subjno}' AS INTEGER), '${tt.subjnm}', '${tt.pronm}', '${tt.day.toString().substring(1,tt.day.toString().length - 1)}', '${tt.start_t.toString().substring(1,tt.start_t.toString().length - 1)}', '${tt.clsroom}', '${tt.beaconid}', '${tt.end_t.toString().substring(1,tt.end_t.toString().length-1)}','${tt.att_t.toString().substring(1,tt.att_t.toString().length-1)}','${tt.out_t.toString().substring(1,tt.out_t.toString().length-1)}')'''
     );
   }
-  Future<List<Timetable>> sd() async {
+  Future<Set<Timetable>> sd() async {
     Database db = await instance.database;
     var tt = await db.query('timeTables');
-    List<Timetable> tList = tt.isNotEmpty
-        ? tt.map((c) => Timetable.fromMap(c)).toList()
-        : [];
+    Set<Timetable> tList = tt.isNotEmpty
+        ? tt.map((c) => Timetable.fromMap(c)).toSet()
+        : {};
     return tList;
   }
-  Future<List<Timetable>> getTimetable() async {
+  Future<Set<Timetable>> getTimetable() async {
     final Database db = await database;
     final List<Map<String, dynamic>> data = await db.query('timeTables');
-
-    return List.generate(data.length, (i) {
+    Set<Timetable> ls= {};
+    ls=List.generate(data.length, (i) {
       return Timetable(
         subjno: data[i]['subjno'],
         subjnm: data[i]['subjnm'],
@@ -88,7 +88,8 @@ class DatabaseHelper {
         att_t: data[i]['att_t'].split(','),
         out_t: data[i]['out_t'].split(','),
       );
-    });
+    }).toSet();
+    return ls;
   }
   Future<int> update(Timetable tt) async {
     Database db = await instance.database;

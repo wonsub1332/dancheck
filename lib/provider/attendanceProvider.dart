@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:dancheck/model/model_attendance.dart';
 import 'package:http/http.dart'as http;
 
-import 'api_adapter.dart';
+import '../model/api_adapter.dart';
 
 class attendanceProvider{
   Uri uri = Uri.parse('http://18.217.3.173:8000/check/attendance/?format=json');
@@ -45,8 +45,6 @@ class attendanceProvider{
     }finally{
       print("post error");
     }
-
-
   }
 
 }
