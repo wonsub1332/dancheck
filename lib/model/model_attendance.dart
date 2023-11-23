@@ -18,7 +18,7 @@ class Attendance {
         classday = map['classday'],
         atime = map['atime'],
         rtime = map['rtime'],
-        check= map['check'];
+        check= map['attendance_check'];
 
   Attendance.fromJson(Map<String, dynamic> json):
         subjno = json['subjno'],
@@ -26,7 +26,7 @@ class Attendance {
         classday = json['classday'],
         atime = json['atime'],
         rtime = json['rtime'],
-        check= json['check'];
+        check= json['attendance_check'];
 
 
   Map<String, dynamic> toMap() {
@@ -35,7 +35,7 @@ class Attendance {
       'classday' : classday,
       'atime' : atime,
       'rtime' : rtime,
-      'check' : check
+      'attendance_check' : check
     };
     if (subjno != null) {
       map['subjno'] = subjno;
@@ -49,7 +49,7 @@ class Attendance {
       'classday' : classday,
       'atime' : atime,
       'rtime' : rtime,
-      'check' : check
+      'attendance_check' : check
     };
     if (subjno != null) {
       json['subjno'] = subjno;

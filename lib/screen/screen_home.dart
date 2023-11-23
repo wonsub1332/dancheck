@@ -250,7 +250,7 @@ class _homeScreenState extends State<homeScreen> {
         future: SharedData.getData(),
         builder: (context, snapshot) {
           final String? id = snapshot.data;
-          return Text("ID:"+id!,style: TextStyle(fontWeight: FontWeight.bold),);
+          return Text("ID:${id!}",style: TextStyle(fontWeight: FontWeight.bold),);
     }
     );
     }

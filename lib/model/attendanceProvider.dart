@@ -7,11 +7,22 @@ import 'api_adapter.dart';
 class attendanceProvider{
   Uri uri = Uri.parse('http://18.217.3.173:8000/check/attendance/?format=json');
 
-  Future<List<Attendance>> getAtt() async {
+  Future<List<Attendance>> getAtt_all() async {
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes)) as List<dynamic>;
       print ('getTable: '+data.toString());
+      return data.map<Attendance>((json) => Attendance.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load post list');
+    }
+  }
+  Future<List<Attendance>> getAtt(stuno,subjno) async {
+    Uri uri = Uri.parse('http://18.217.3.173:8000/check/myatt/'+stuno.toString()+'/'+subjno.toString()+'/?format=json');
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      final data = json.decode(utf8.decode(response.bodyBytes)) as List<dynamic>;
+      print ('getAttendance: '+data.toString());
       return data.map<Attendance>((json) => Attendance.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load post list');
