@@ -149,7 +149,6 @@ class _screen_tableState extends State<screen_table> {
     Color randcolor=Colors.blue;
 
     for (var lecture in selectedLectures) {
-      print("lecture : "+lecture.subjnm);
       for (int i = 0; i < lecture.day.length; i++) {
 
         double top = kFirstColumnHeight + (double.parse(lecture.start_t[i])/2.0) * kBoxSize;

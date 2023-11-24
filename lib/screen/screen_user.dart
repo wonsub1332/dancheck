@@ -315,7 +315,7 @@ class _screen_userState extends State<screen_user> {
                             return ListView.builder(
                               itemCount: filteredSubjects.length,
                               itemBuilder: (context, index) {
-                                return buildExceptWidget(
+                                return buildLectureToE(
                                     filteredSubjects[index], context);
                               },
                             );
@@ -333,7 +333,7 @@ class _screen_userState extends State<screen_user> {
           );
         });
   }
-  Widget buildExceptWidget(Timetable cls, context){
+  Widget buildLectureToE(Timetable cls, context){
     return Padding(
         padding: const EdgeInsets.all(2.0),
         child: ElevatedButton(
@@ -374,12 +374,103 @@ class _screen_userState extends State<screen_user> {
             ),
           ),
           onPressed: ()async {
-            showForm(context,cls.subjno,cls.subjnm);
+            showPop(context,cls.subjno,cls.subjnm);
           },
         )
     );
   }
-  Future showForm(context,subjno,subjnm){
+  Future showPop(context,subjno,subjnm){
+    ValueNotifier<String> searchTermNotifier = ValueNotifier<String>("");
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                    children: [
+                      Text(subjnm.toString(),style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold)),
+                      Expanded(
+                        child: FutureBuilder<List<Attendance>>(
+                          future: attProv.getAtt(stuId,subjno),
+
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                return Text("Error: ${snapshot.error}");
+                              }
+                              List<Attendance> allSubjects = snapshot.data!;
+                              return ValueListenableBuilder<String>(
+                                valueListenable: searchTermNotifier,
+                                builder: (context, value, child) {
+                                  List<Attendance> filteredSubjects = allSubjects
+                                      .where((subject) =>
+                                      subject.classday.contains(value))
+                                      .toList();
+
+                                  return ListView.builder(
+                                    itemCount: filteredSubjects.length,
+                                    itemBuilder: (context, index) {
+                                      return buildAttToExcept(
+                                          filteredSubjects[index],subjnm,subjno, context);
+                                    },
+                                  );
+                                },
+                              );
+                            } else {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                          },
+                        ),
+
+                      )
+                    ]
+                ),
+              ),
+              insetPadding: EdgeInsets.fromLTRB(0, 80, 0, 80)
+          );
+        }
+    );
+  }
+  Widget buildAttToExcept(Attendance att,subjnm,subjno, context){
+    return Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor:
+              att.check == 1 ? MaterialStateProperty.all(Colors.green) : MaterialStateProperty.all(Colors.red)
+          ),
+          child:
+          Container(
+
+            height: MediaQuery.of(context).size.height * 0.08,
+            padding: EdgeInsets.all(0.8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text("${att.classday.toString().split('/')[0]}월 "),
+                Text("${att.classday.toString().split('/')[1]}일"),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("출석:${att.atime}"),
+                    Text("퇴실:${att.rtime}"),
+                  ],
+
+                ),
+                att.check == 1 ? const Text('출석',style: TextStyle(fontSize: 20)) : const Text('결석',style: TextStyle(fontSize: 20))
+              ],
+            ),
+          ),
+          onPressed: ()async {
+              showForm(context,att,subjnm,subjno);
+          },
+        )
+    );
+  }
+  Future showForm(context,att,subjnm,subjno){
     double width=MediaQuery.of(context).size.width;
     double height=MediaQuery.of(context).size.height;
     return showDialog(
