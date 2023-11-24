@@ -15,6 +15,12 @@ class screen_user extends StatefulWidget {
 
 class _screen_userState extends State<screen_user> {
 
+  final _formKey = GlobalKey<FormState>();
+
+  late Attendance att;
+
+  String _exception="";
+
 
   @override
   void initState() {
@@ -67,7 +73,7 @@ class _screen_userState extends State<screen_user> {
           child: Card(
               margin: EdgeInsets.all(marginValue),
               child: InkWell(
-                onTap: () async{},
+                onTap: () async{ viewExcept();},
                 child: SizedBox(
                   height: height*0.35,
                   child: Column(
@@ -273,6 +279,191 @@ class _screen_userState extends State<screen_user> {
 
           },
         )
+    );
+  }
+
+  Future viewExcept() async{
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          ValueNotifier<String> searchTermNotifier = ValueNotifier<String>("");
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child:
+            Column(
+              children: [
+                Expanded(
+                  child: FutureBuilder<Set<Timetable>>(
+                    future: prov.getTableID(stuId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        if (snapshot.hasError) {
+                          return Text("Error: ${snapshot.error}");
+                        }
+
+                        Set<Timetable> allSubjects = snapshot.data!;
+
+                        return ValueListenableBuilder<String>(
+                          valueListenable: searchTermNotifier,
+                          builder: (context, value, child) {
+                            List<Timetable> filteredSubjects = allSubjects
+                                .where((subject) =>
+                                subject.subjnm.contains(value))
+                                .toList();
+
+                            return ListView.builder(
+                              itemCount: filteredSubjects.length,
+                              itemBuilder: (context, index) {
+                                return buildExceptWidget(
+                                    filteredSubjects[index], context);
+                              },
+                            );
+                          },
+                        );
+                      } else {
+                        return const Center(
+                            child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+  Widget buildExceptWidget(Timetable cls, context){
+    return Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: ElevatedButton(
+          child:
+          Container(
+            height: MediaQuery.of(context).size.height * 0.1,
+            padding: EdgeInsets.all(0.8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(cls.subjno.toString(),
+                          style: TextStyle(fontSize: 20)),
+                      Text(cls.subjnm.toString(),
+                          style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(cls.clsroom.toString(),
+                          style: TextStyle(fontSize: 20)),
+                      Text(cls.pronm.toString(),
+                          style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          onPressed: ()async {
+            showForm(context,cls.subjno,cls.subjnm);
+          },
+        )
+    );
+  }
+  Future showForm(context,subjno,subjnm){
+    double width=MediaQuery.of(context).size.width;
+    double height=MediaQuery.of(context).size.height;
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+              content: SizedBox(
+                width: width * 0.8,
+                height: height * 0.4,
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(subjno.toString(),style: TextStyle(fontSize: (width*0.06),fontFamily:"SOYO"),),
+                              Text(subjnm,style: TextStyle(fontSize: (width*0.06),fontFamily:"SOYO" ),),
+
+                            ],
+                          ),
+                        ),
+
+                        TextFormField(
+                          maxLines: 6,
+                          decoration:
+                            InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green,)
+                              ),
+                            ),
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          onSaved: (value){
+                            setState(() {
+                              _exception=value!;
+                            });
+                          },
+                        ),
+
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: ElevatedButton(
+                            onPressed: () async{
+                              if (_formKey.currentState!.validate()) {
+                                // validation 이 성공하면 폼 저장하기
+                                _formKey.currentState!.reset();
+                                Navigator.pop(context);
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        content: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text("이의 신청 완료",style: TextStyle(fontSize: (width*0.06),fontFamily:"SOYO",fontWeight: FontWeight.bold ),),
+                                            Icon(Icons.how_to_vote_rounded)
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                );
+
+                              }
+                            },
+                            child: Text(
+                              '이의신청 하기',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ),
+              insetPadding: EdgeInsets.fromLTRB(0, 80, 0, 80)
+          );
+        }
     );
   }
 
