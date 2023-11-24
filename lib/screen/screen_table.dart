@@ -151,7 +151,7 @@ class _screen_tableState extends State<screen_table> {
     for (var lecture in selectedLectures) {
       for (int i = 0; i < lecture.day.length; i++) {
 
-        double top = kFirstColumnHeight + (double.parse(lecture.start_t[i])/2.0) * kBoxSize;
+        double top = kFirstColumnHeight + ((double.parse(lecture.start_t[i])-1.0)/2.0) * kBoxSize;
         double height = ((double.parse(lecture.end_t[i]) - double.parse(lecture.start_t[i]))/2.0) * kBoxSize;
 
         if (lecture.day[i] == currentDay) {
